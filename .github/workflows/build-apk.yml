@@ -35,6 +35,13 @@ jobs:
           channel: 'stable'
           cache: true
 
+      # ── Generate Android scaffold (jika belum ada) ───────────
+      - name: Create Android platform files
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create --platforms android --project-name banding_wa .
+          fi
+
       # ── Dependencies ───────────────────────────────────────────
       - name: Get Flutter packages
         run: flutter pub get
