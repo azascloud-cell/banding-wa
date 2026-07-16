@@ -38,8 +38,20 @@ router.post("/auth/register", async (req, res) => {
   }
 
   const password_hash = await bcrypt.hash(password, 12);
-  const info = stmt.insertUser.run({ username, password_hash }) as { lastInsertRowid: number | bigint };
-  const userId = Number(info.lastInsertRowid);
+  const info = stmt.insertUser.run({ username, password_hash }) as {
+    lastInsertRowid: number | bigint;
+    changes: number;
+  };
+
+  // Konversi BigInt → number, pastikan valid
+  const rawId = info.lastInsertRowid;
+  const userId = typeof rawId === "bigint" ? Number(rawId) : rawId;
+
+  if (!userId || !Number.isFinite(userId)) {
+    req.log.error({ info }, "[auth] lastInsertRowid tidak valid");
+    res.status(500).json({ error: "Registrasi gagal, coba lagi" });
+    return;
+  }
 
   const token = signToken({ userId, username });
   req.log.info({ userId, username }, "[auth] User baru terdaftar");
@@ -71,12 +83,15 @@ router.post("/auth/login", async (req, res) => {
     return;
   }
 
-  const token = signToken({ userId: row.id, username: row.username });
-  req.log.info({ userId: row.id, username: row.username }, "[auth] Login berhasil");
+  // Pastikan id selalu number, bukan BigInt
+  const userId = typeof row.id === "bigint" ? Number(row.id) : Number(row.id);
+
+  const token = signToken({ userId, username: row.username });
+  req.log.info({ userId, username: row.username }, "[auth] Login berhasil");
 
   res.json({
     token,
-    user: { id: row.id, username: row.username },
+    user: { id: userId, username: row.username },
   });
 });
 
