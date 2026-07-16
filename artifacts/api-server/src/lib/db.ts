@@ -1,11 +1,13 @@
 /**
- * db.ts — SQLite database setup via better-sqlite3
+ * db.ts — SQLite database setup via Node.js built-in (node:sqlite, Node 24+)
+ * Tidak butuh native addon — zero build step.
  * Tabel: users
  */
 
-import Database from "better-sqlite3";
-import { join } from "node:path";
+// Node 24 built-in — tidak perlu install apapun
+import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
+import { join } from "node:path";
 import { logger } from "./logger.js";
 
 const DB_DIR = process.env.DB_DIR ?? "/tmp/banding-wa-data";
@@ -13,11 +15,11 @@ mkdirSync(DB_DIR, { recursive: true });
 
 const DB_PATH = join(DB_DIR, "app.db");
 
-export const db = new Database(DB_PATH);
+export const db = new DatabaseSync(DB_PATH);
 
 // WAL mode — baca lebih cepat, aman concurrent
-db.pragma("journal_mode = WAL");
-db.pragma("foreign_keys = ON");
+db.exec("PRAGMA journal_mode = WAL");
+db.exec("PRAGMA foreign_keys = ON");
 
 // ── Schema ────────────────────────────────────────────────────
 db.exec(`
@@ -39,14 +41,27 @@ export interface UserRow {
   created_at: string;
 }
 
+const _insertUser = db.prepare(
+  "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+);
+const _findByUsername = db.prepare(
+  "SELECT * FROM users WHERE username = ? LIMIT 1",
+);
+const _findById = db.prepare(
+  "SELECT * FROM users WHERE id = ? LIMIT 1",
+);
+
 export const stmt = {
-  insertUser: db.prepare<{ username: string; password_hash: string }>(
-    "INSERT INTO users (username, password_hash) VALUES (@username, @password_hash)",
-  ),
-  findByUsername: db.prepare<{ username: string }>(
-    "SELECT * FROM users WHERE username = @username LIMIT 1",
-  ),
-  findById: db.prepare<{ id: number }>(
-    "SELECT * FROM users WHERE id = @id LIMIT 1",
-  ),
+  insertUser: {
+    run: (params: { username: string; password_hash: string }) =>
+      _insertUser.run(params.username, params.password_hash),
+  },
+  findByUsername: {
+    get: (params: { username: string }) =>
+      _findByUsername.get(params.username) as UserRow | undefined,
+  },
+  findById: {
+    get: (params: { id: number }) =>
+      _findById.get(params.id) as UserRow | undefined,
+  },
 } as const;
