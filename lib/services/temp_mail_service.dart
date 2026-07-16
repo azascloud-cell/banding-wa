@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import '../models/email_model.dart';
 import '../models/inbox_message_model.dart';
+import 'auth_service.dart';
 
 class TempMailService {
   // ── Public API ──────────────────────────────────────────────
@@ -11,7 +12,8 @@ class TempMailService {
   /// Buat email sementara via Replit proxy
   static Future<EmailModel> createEmail() async {
     final res = await http
-        .get(Uri.parse('${AppConstants.apiBaseUrl}/tempmail/create'))
+        .get(Uri.parse('${AppConstants.apiBaseUrl}/tempmail/create'),
+            headers: AuthService.headers)
         .timeout(const Duration(seconds: 20));
 
     if (res.statusCode != 200) {
@@ -36,7 +38,9 @@ class TempMailService {
       final uri = Uri.parse(
         '${AppConstants.apiBaseUrl}/tempmail/inbox?sidToken=${Uri.encodeQueryComponent(sidToken)}',
       );
-      final res = await http.get(uri).timeout(const Duration(seconds: 20));
+      final res = await http
+          .get(uri, headers: AuthService.headers)
+          .timeout(const Duration(seconds: 20));
       if (res.statusCode != 200) return [];
 
       final json = jsonDecode(res.body) as Map<String, dynamic>;

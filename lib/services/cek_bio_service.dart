@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import '../models/cek_bio_models.dart';
+import 'auth_service.dart';
 
 /// Hasil satu job scan: status, progress, statistik, dan detail per nomor.
 /// Diisi langsung dari respons backend — backend yang melakukan pengecekan
@@ -58,7 +59,7 @@ class CekBioService {
 
     final response = await http.post(
       _uri('/cek-bio/scan'),
-      headers: {'Content-Type': 'application/json'},
+      headers: AuthService.headers,
       body: jsonEncode({'numbers': numbers}),
     );
 
@@ -71,7 +72,8 @@ class CekBioService {
   }
 
   static Future<CekBioScanJob> getScanStatus(String jobId) async {
-    final response = await http.get(_uri('/cek-bio/scan/$jobId'));
+    final response = await http.get(_uri('/cek-bio/scan/$jobId'),
+        headers: AuthService.headers);
 
     if (response.statusCode != 200) {
       throw Exception('Gagal mengambil status scan (${response.statusCode}): ${response.body}');

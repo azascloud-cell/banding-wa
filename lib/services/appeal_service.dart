@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import '../models/banding_result_model.dart';
+import 'auth_service.dart';
 
 class AppealService {
   /// Submit banding ke WhatsApp Support via backend Pterodactyl.
@@ -16,7 +17,7 @@ class AppealService {
       final res = await http
           .post(
             Uri.parse('${AppConstants.apiBaseUrl}/appeal/submit'),
-            headers: {'Content-Type': 'application/json'},
+            headers: AuthService.headers,
             body: jsonEncode({
               'phone': phone,
               'email': email,

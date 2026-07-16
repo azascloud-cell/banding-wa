@@ -23,8 +23,8 @@ router.post("/cek-bio/scan", (req, res) => {
     return res.status(400).json({ error: "Tidak ada nomor valid di dalam array" });
   }
 
-  const job = startScanJob(clean);
-  req.log.info({ jobId: job.jobId, total: job.total }, "Scan job started");
+  const job = startScanJob(clean, req.user!.userId);
+  req.log.info({ jobId: job.jobId, total: job.total, userId: req.user!.userId }, "Scan job started");
 
   return res.status(202).json({ jobId: job.jobId });
 });

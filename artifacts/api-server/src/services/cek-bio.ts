@@ -570,7 +570,7 @@ export function getJob(jobId: string): ScanJob | undefined {
 
 const MAX_NUMBERS = 100;
 
-export function startScanJob(rawNumbers: string[]): ScanJob {
+export function startScanJob(rawNumbers: string[], userId: number): ScanJob {
   cleanOldJobs();
 
   const numbers = rawNumbers
@@ -594,12 +594,12 @@ export function startScanJob(rawNumbers: string[]): ScanJob {
   JOBS.set(jobId, job);
 
   // Jalankan di background (tidak di-await)
-  void runJob(job);
+  void runJob(job, userId);
 
   return job;
 }
 
-async function runJob(job: ScanJob): Promise<void> {
+async function runJob(job: ScanJob, userId: number): Promise<void> {
   job.status = "running";
   try {
     // ── Batch check via Baileys (jika sesi WA aktif) ─────────
@@ -612,7 +612,7 @@ async function runJob(job: ScanJob): Promise<void> {
 
     // Kumpulkan e164 list (tanpa +) untuk Baileys
     const e164List = [...parsedMap.values()].map((p) => p!.dialCode + p!.national);
-    const baileysMap = await checkOnWhatsApp(e164List).catch(() => new Map<string, boolean>());
+    const baileysMap = await checkOnWhatsApp(userId, e164List).catch(() => new Map<string, boolean>());
 
     // ── Loop per nomor ────────────────────────────────────────
     for (let i = 0; i < job.numbers.length; i++) {
