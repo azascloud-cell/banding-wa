@@ -6,7 +6,7 @@ class AppConstants {
 
   /// API backend Pterodactyl — ganti ke URL server Pterodactyl kamu
   static const String apiBaseUrl =
-      'http://nodeprvt.lynzzofficial.com:2298/api';
+      'https://98a65abf-af04-4c11-ab74-063dbe8fd7eb-00-10v1sy4mg0x7x.sisko.replit.dev/api';
 }
 
 /// Warna utama aplikasi - Dark mode dengan merah dan ungu
