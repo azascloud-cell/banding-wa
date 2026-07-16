@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants.dart';
-import '../../core/theme.dart';
 import '../../providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -282,7 +281,7 @@ class _AppLogo extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          AppConstants.appName,
+          AppStrings.appName,
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
       ],
@@ -342,14 +341,14 @@ class _AuthField extends StatelessWidget {
         prefixIcon: Icon(icon, size: 20),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: AppColors.cardBackground,
+        fillColor: AppColors.surfaceCard,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.cardBorder),
+          borderSide: BorderSide(color: AppColors.divider),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.cardBorder),
+          borderSide: BorderSide(color: AppColors.divider),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
