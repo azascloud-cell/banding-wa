@@ -1,0 +1,4 @@
+- [Chrome CPU fix](chrome-cpu-fix.md) — --single-process is root cause of 70%+ CPU on Pterodactyl; remove it + add idle close timer
+- [Appeal history + ticket parsing](appeal-history.md) — ticket number parsed in tempmail route, stored in appeal-history.ts, Flutter HistoryEntry has ticketNumber field
+- [better-sqlite3 native build](sqlite-native-build.md) — must be in onlyBuiltDependencies in pnpm-workspace.yaml or .node binding won't compile
+- [Multi-user auth architecture](auth-architecture.md) — JWT + SQLite users, per-user WA session Map, Flutter AuthService.headers pattern
