@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/app_logo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,9 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final provider = context.read<AuthProvider>();
     final ok = await provider.login(_usernameCtrl.text.trim(), _passwordCtrl.text);
     if (!mounted) return;
-    if (ok) {
-      context.go('/');
-    }
+    if (ok) context.go('/');
   }
 
   @override
@@ -40,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final loading = auth.status == AuthStatus.loading;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -49,8 +49,30 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo / judul
-                  const _AppLogo(),
+                  // Logo
+                  const Center(child: AppLogo(size: 88)),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppStrings.appName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    AppStrings.appTagline,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 2.5,
+                      color: AppColors.neonPurpleLight,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 40),
 
                   // Error banner
@@ -59,7 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                   ],
 
-                  // Username
                   _AuthField(
                     controller: _usernameCtrl,
                     label: 'Username',
@@ -68,14 +89,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Password
                   _AuthField(
                     controller: _passwordCtrl,
                     label: 'Password',
                     icon: Icons.lock_outline,
                     obscure: _obscure,
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility, size: 20),
+                      icon: Icon(
+                        _obscure ? Icons.visibility_off : Icons.visibility,
+                        size: 20,
+                        color: AppColors.textMuted,
+                      ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                     validator: (v) => (v == null || v.isEmpty) ? 'Wajib diisi' : null,
@@ -83,32 +107,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 28),
 
                   // Login button
-                  ElevatedButton(
+                  _GradientButton(
                     onPressed: loading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: AppColors.neonPurple,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: loading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
-                          )
-                        : const Text('Masuk', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    loading: loading,
+                    label: 'Masuk',
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
-                  // Daftar link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Belum punya akun?', style: TextStyle(color: AppColors.textSecondary)),
+                      Text(
+                        'Belum punya akun?',
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      ),
                       TextButton(
                         onPressed: () => context.go('/register'),
-                        child: const Text('Daftar'),
+                        style: TextButton.styleFrom(foregroundColor: AppColors.neonPurpleLight),
+                        child: const Text('Daftar', style: TextStyle(fontWeight: FontWeight.w700)),
                       ),
                     ],
                   ),
@@ -159,6 +175,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final loading = auth.status == AuthStatus.loading;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -168,12 +185,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const _AppLogo(),
-                  const SizedBox(height: 8),
+                  const Center(child: AppLogo(size: 88)),
+                  const SizedBox(height: 16),
                   Text(
+                    AppStrings.appName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
                     'Buat akun baru',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 36),
 
@@ -189,7 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) return 'Wajib diisi';
                       if (!RegExp(r'^[a-zA-Z0-9_]{3,30}$').hasMatch(v.trim())) {
-                        return '3–30 karakter, hanya huruf/angka/underscore';
+                        return '3-30 karakter, hanya huruf/angka/underscore';
                       }
                       return null;
                     },
@@ -202,7 +233,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     icon: Icons.lock_outline,
                     obscure: _obscure,
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility, size: 20),
+                      icon: Icon(
+                        _obscure ? Icons.visibility_off : Icons.visibility,
+                        size: 20,
+                        color: AppColors.textMuted,
+                      ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                     validator: (v) {
@@ -223,31 +258,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 28),
 
-                  ElevatedButton(
+                  _GradientButton(
                     onPressed: loading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: AppColors.neonPurple,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: loading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
-                          )
-                        : const Text('Daftar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    loading: loading,
+                    label: 'Daftar',
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Sudah punya akun?', style: TextStyle(color: AppColors.textSecondary)),
+                      Text(
+                        'Sudah punya akun?',
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      ),
                       TextButton(
                         onPressed: () => context.go('/login'),
-                        child: const Text('Masuk'),
+                        style: TextButton.styleFrom(foregroundColor: AppColors.neonPurpleLight),
+                        child: const Text('Masuk', style: TextStyle(fontWeight: FontWeight.w700)),
                       ),
                     ],
                   ),
@@ -263,28 +291,68 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 // ── Shared widgets ────────────────────────────────────────────
 
-class _AppLogo extends StatelessWidget {
-  const _AppLogo();
+/// Tombol gradient neon purple-red ala AZASTORE
+class _GradientButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final bool loading;
+  final String label;
+
+  const _GradientButton({
+    required this.onPressed,
+    required this.loading,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: AppColors.neonGradient,
-          ),
-          child: const Icon(Icons.phone_android, size: 38, color: Colors.white),
+    return GestureDetector(
+      onTap: onPressed,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        height: 54,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: onPressed != null
+              ? const LinearGradient(
+                  colors: [AppColors.neonPurple, AppColors.neonPurpleLight],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
+              : const LinearGradient(
+                  colors: [Color(0xFF3D3D3D), Color(0xFF2A2A2A)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+          boxShadow: onPressed != null
+              ? [
+                  BoxShadow(
+                    color: AppColors.neonPurple.withOpacity(0.45),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  )
+                ]
+              : [],
         ),
-        const SizedBox(height: 16),
-        Text(
-          AppStrings.appName,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-      ],
+        alignment: Alignment.center,
+        child: loading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: Colors.white,
+                ),
+              )
+            : Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+      ),
     );
   }
 }
@@ -298,15 +366,20 @@ class _ErrorBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.error.withOpacity(0.12),
+        color: AppColors.error.withOpacity(0.1),
         border: Border.all(color: AppColors.error.withOpacity(0.4)),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: AppColors.error, size: 18),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 18),
           const SizedBox(width: 8),
-          Expanded(child: Text(message, style: TextStyle(color: AppColors.error, fontSize: 13))),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: AppColors.error, fontSize: 13),
+            ),
+          ),
         ],
       ),
     );
@@ -336,23 +409,29 @@ class _AuthField extends StatelessWidget {
       controller: controller,
       obscureText: obscure,
       validator: validator,
+      style: const TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, size: 20),
+        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        prefixIcon: Icon(icon, size: 20, color: AppColors.textMuted),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.surfaceCard,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.divider),
+          borderSide: const BorderSide(color: AppColors.divider),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.divider),
+          borderSide: const BorderSide(color: AppColors.divider),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.neonPurple, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.neonPurple, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
       ),
     );

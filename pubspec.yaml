@@ -1,7 +1,7 @@
 name: banding_wa
 description: Aplikasi banding WhatsApp otomatis dengan email sementara
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -26,3 +26,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/app_icon.jpg
